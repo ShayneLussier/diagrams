@@ -10,7 +10,9 @@ from diagrams.azure.storage import BlobStorage
 
 from diagrams.onprem.analytics import PowerBI
 from diagrams.generic.storage import Storage
-from diagrams.generic.blank import Blank
+from diagrams.programming.flowchart import SummingJunction
+
+blank = Edge(color="#FFFFFF00")
 
 with Diagram("Azure Architecture", show=False, outformat="png", direction="LR"):
 
@@ -24,22 +26,22 @@ with Diagram("Azure Architecture", show=False, outformat="png", direction="LR"):
             function_app = FunctionApps("Function App")
             data_factories = DataFactories("Data Factories")
             databricks = Databricks("Databricks")
-            function_app - data_factories - databricks
+            function_app - blank - data_factories - blank - databricks
 
         with Cluster("Streaming"):
             stream_analytics = StreamAnalyticsJobs("Stream Analytics")
             eventhub = EventHubs("Event Hubs")
-            eventhub - stream_analytics
+            eventhub - blank - stream_analytics
     
     with Cluster("Data Lake"):
         with Cluster("Staging Layer"):
             blob_staging = BlobStorage("Blob Storage")
             data_lake_staging = DataLake("ADLS Gen2")
-            blob_staging - data_lake_staging
+            blob_staging - blank - data_lake_staging
         with Cluster("Processed Layer"):
             blob_processed = BlobStorage("Blob Storage")
             data_lake_processed = DataLake("ADLS Gen2")
-            blob_processed - data_lake_processed
+            blob_processed - blank - data_lake_processed
 
     with Cluster("Data Catalogue"):
         data_factories3 = DataFactories("Data Factories:\nData flow mapping")
@@ -50,7 +52,7 @@ with Diagram("Azure Architecture", show=False, outformat="png", direction="LR"):
         function_app2 = FunctionApps("Function App")
         data_factories2 = DataFactories("Data Factories")
         databricks2 = Databricks("Databricks")
-        function_app2 - data_factories2 - databricks2
+        function_app2 - blank - data_factories2 - blank - databricks2
     
     with Cluster("Data Warehouse"):
         synapse = SynapseAnalytics("Synapse Analytics")
@@ -58,16 +60,15 @@ with Diagram("Azure Architecture", show=False, outformat="png", direction="LR"):
     with Cluster("Analytics"):
         synapse2 = SynapseAnalytics("Synapse Analytics:\nSQL On-demand")
         power_bi = PowerBI("Power BI")
-        synapse2 << power_bi
 
     with Cluster("Orchestration"):
         data_factories4 = DataFactories("Data Factories")
         logic_apps = LogicApps("Azure Logic Apps")
         event_grid = EventGridTopics("Event Grid")
-        data_factories4 - logic_apps - event_grid
+        data_factories4 - blank - logic_apps - blank - event_grid
     
     with Cluster("Monitoring"):
-        azure_monitor = Blank("Azure Monitor")
+        azure_monitor = SummingJunction("Azure Monitor")
 
     sql >> function_app
     databricks >> blob_staging
@@ -76,5 +77,5 @@ with Diagram("Azure Architecture", show=False, outformat="png", direction="LR"):
     data_lake_staging >> function_app2
     data_factories3 >> blob_processed
     data_lake_processed << function_app2
-    catalog << synapse2 << power_bi >> synapse << databricks2
-    event_grid - azure_monitor
+    catalog << synapse2 << power_bi >> synapse << data_factories2
+    event_grid - blank - azure_monitor

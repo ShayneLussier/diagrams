@@ -77,7 +77,7 @@ with Diagram("On-premise Architecture", show=False, outformat="png", direction="
     spark >> s3_staging >> spark2
     s3_processed << dbt >> snowflake
     s3_processed << atlation << power_bi
-    tableau - big_query
+    tableau << big_query
 
 
     luigi - blank - grafana
